@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Quiz Result - {{ quiz.title }}{% endblock %}
+
+{% block quiz_result %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Quiz Result Card -->
+            <div class="card result-card shadow-lg">
+                <div class="card-header text-white bg-success text-center">
+                    <h2><i class="fas fa-trophy"></i> Quiz Result</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Summary Section -->
+                    <h4 class="text-center">{{ quiz.title }}</h4>
+                    <p class="text-muted text-center">{{ quiz.description }}</p>
+
+                    <div class="score-summary text-center">
+                        <h3 class="score-text">
+                            Your Score: <span class="text-primary">{{ score }}</span> / {{ total_questions }}
+                        </h3>
+                        <h4 class="percentage-text">
+                            Percentage: <span class="text-success">{{ percentage }}%</span>
+                        </h4>
+                        <h5 class="status-text {% if percentage >= 50 %}text-success{% else %}text-danger{% endif %}">
+                            {% if percentage >= 50 %}
+                                <i class="fas fa-check-circle"></i> Passed
+                            {% else %}
+                                <i class="fas fa-times-circle"></i> Failed
+                            {% endif %}
+                        </h5>
+                    </div>
+
+                    <!-- Score Progress Bar -->
+                    <div class="progress mt-3">
+                        <div class="progress-bar progress-bar-striped {% if percentage >= 50 %}bg-success{% else %}bg-danger{% endif %}" 
+                            role="progressbar" style="width: {{ percentage }}%;" 
+                            aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100">
+                            {{ percentage }}%
+                        </div>
+                    </div>
+
+                    <!-- Answer Breakdown -->
+                    <div class="mt-4">
+                        <h5>Question Breakdown</h5>
+                        <ul class="list-group">
+                            {% for question_attempt in question_attempts %}
+                                <li class="list-group-item {% if question_attempt.is_correct %}list-group-item-success{% else %}list-group-item-danger{% endif %}">
+                                    <strong>Q{{ forloop.counter }}:</strong> {{ question_attempt.question.text }}<br>
+                                    <small class="text-muted">Your Answer: 
+                                        {% if question_attempt.selected_answer %}
+                                            {{ question_attempt.selected_answer.text }}
+                                        {% else %}
+                                            No answer selected
+                                        {% endif %}
+                                    </small><br>
+                                    <small class="text-muted">Correct Answer: 
+                                        {% for answer in question_attempt.question.answers.all %}
+                                            {% if answer.is_correct %}
+                                                <span class="text-success">{{ answer.text }}</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'start_quiz' quiz.id %}" class="btn btn-primary">
+                            <i class="fas fa-redo"></i> Retake Quiz
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-dark">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .result-card {
+        border-radius: 10px;
+        transition: 0.3s;
+    }
+
+    .result-card:hover {
+        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .score-summary {
+        margin-top: 15px;
+    }
+
+    .score-text {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .percentage-text {
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .status-text {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .progress {
+        height: 20px;
+        border-radius: 10px;
+    }
+
+    .list-group-item {
+        font-size: 16px;
+    }
+</style>
+
+{% endblock quiz_result %}

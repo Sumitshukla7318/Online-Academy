@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block user_signup %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Create an Account</h2>
+
+                    <!-- Display Django messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" name="username" id="username" class="form-control" placeholder="Enter username" required>
+                            <div class="invalid-feedback">Please enter a valid username.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" name="email" id="email" class="form-control" placeholder="Enter email" required>
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">👁</button>
+                            </div>
+                            <div class="invalid-feedback">Password cannot be empty.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="profile_pic" class="form-label">Profile Picture (Optional)</label>
+                            <input type="file" name="profile_pic" id="profile_pic" class="form-control" accept="image/*" onchange="previewImage(event)">
+                            <img id="profilePreview" class="img-thumbnail mt-2 d-none" style="max-width: 100px;">
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" name="is_instructor" id="is_instructor" class="form-check-input">
+                            <label for="is_instructor" class="form-check-label">Register as an Instructor</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                    </form>
+
+                    <p class="text-center mt-3">
+                        Already have an account? <a href="{% url 'login' %}" class="text-decoration-none">Login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Show/Hide Password and Image Preview -->
+<script>
+    function togglePassword() {
+        let passwordField = document.getElementById("password");
+        passwordField.type = passwordField.type === "password" ? "text" : "password";
+    }
+
+    function previewImage(event) {
+        let reader = new FileReader();
+        reader.onload = function () {
+            let preview = document.getElementById("profilePreview");
+            preview.src = reader.result;
+            preview.classList.remove("d-none");
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    // Bootstrap Form Validation
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+{% endblock user_signup %}

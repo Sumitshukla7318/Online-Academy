@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block course_detail %}
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <div class="row">
+            <!-- Course Image -->
+            <div class="col-md-4">
+                <img src="{{ course.thumbnail.url }}" class="img-fluid rounded" alt="Course Image">
+            </div>
+            <!-- Course Details -->
+            <div class="col-md-8">
+                <h1 class="font-weight-bold">{{ course.title }}</h1>
+                <p class="text-muted">{{ course.category }} | {{ course.level }}</p>
+                <p>{{ course.description }}</p>
+                <h4 class="text-primary">${{ course.price }}</h4>
+                <p><strong>Instructor:</strong> {{ course.instructor.username }}</p>
+
+                <!-- Enrollment Button -->
+                <form method="POST">
+                    {% csrf_token %}
+                    {% if is_enrolled %}
+                        <a href="{% url 'course_lessons' course.id %}" class="btn btn-success">
+                            <i class="fas fa-play-circle"></i> Continue Learning
+                        </a>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Enroll Now
+                        </button>
+                    {% endif %}
+                </form>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Lessons Section -->
+    {% if is_enrolled %}
+    <div class="mt-5">
+        <h3>Course Lessons</h3>
+        <ul class="list-group">
+            {% for lesson in course.lessons.all %}
+                <li class="list-group-item">
+                    <a href="{% url 'lesson_detail' lesson.id %}">
+                        <i class="fas fa-video"></i> {{ lesson.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endblock course_detail %}

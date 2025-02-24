@@ -1,0 +1,124 @@
+{% extends "Instructor/instructor_base.html" %}
+
+{% block students_enrolled %}
+<div class="container-fluid mt-4 ms-5">
+    <h2 class="mb-4"><i class="fas fa-users ms-5"></i> Enrolled Students</h2>
+
+    <!-- Search & Export Options -->
+    <div class="d-flex justify-content-between mb-3 ms-5">
+        <input type="text" class="form-control w-25" id="searchInput" placeholder="Search students...">
+        <button class="btn btn-success" onclick="exportToCSV()">
+            <i class="fas fa-file-csv"></i> Export CSV
+        </button>
+    </div>
+
+    {% if courses %}
+    {% for course in courses %}
+<div class="card shadow-lg mb-4 ms-5">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">{{ course.title }}</h5>
+    </div>
+    <div class="card-body">
+        {% if course.enrolled_students.all %}
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Student Name</th>
+                    <th>Email</th>
+                    <th>Enrollment Date</th>
+                    <th>Progress</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for enrollment in course.enrolled_students.all %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    {% comment %} <td>{{ enrollment.user.first_name }} {{ enrollment.user.last_name }}</td> {% endcomment %}
+                    <td>{{ enrollment.user.username }}</td>
+                    <td>{{ enrollment.user.email }}</td>
+                    <td>{{ enrollment.enrolled_at }}</td>
+                    <td>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                style="width: {{ enrollment.progress }}%;" aria-valuenow="{{ enrollment.progress }}"
+                                aria-valuemin="0" aria-valuemax="100">
+                                {{ enrollment.progress }}%
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="{% url 'student_detail' enrollment.user.id %}" class="btn btn-info btn-sm">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-times"></i> Remove
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-warning">No students enrolled in this course.</div>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+
+    {% else %}
+    <div class="alert alert-info text-center">
+        <i class="fas fa-info-circle"></i> No courses found.
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .progress {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .btn-sm {
+        font-size: 14px;
+    }
+
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+
+<script>
+    // Search Functionality
+    document.getElementById("searchInput").addEventListener("keyup", function () {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+            let studentName = row.cells[1].textContent.toLowerCase();
+            row.style.display = studentName.includes(filter) ? "" : "none";
+        });
+    });
+
+    // Export to CSV
+    function exportToCSV() {
+        let csvContent = "data:text/csv;charset=utf-8,Student Name,Email,Enrollment Date,Progress\n";
+        document.querySelectorAll("tbody tr").forEach(row => {
+            let studentName = row.cells[1].textContent;
+            let email = row.cells[2].textContent;
+            let date = row.cells[3].textContent;
+            let progress = row.cells[4].textContent;
+            csvContent += `${studentName},${email},${date},${progress}\n`;
+        });
+
+        let encodedUri = encodeURI(csvContent);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "enrolled_students.csv");
+        document.body.appendChild(link);
+        link.click();
+    }
+</script>
+{% endblock students_enrolled %}

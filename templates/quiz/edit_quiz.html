@@ -1,0 +1,109 @@
+{% extends 'Instructor/instructor_base.html' %}
+{% block edit_quiz %}
+<div class="container mt-4 ms-5">
+    <div class="card shadow-lg ms-5">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="fas fa-edit"></i> Edit Quiz</h4>
+        </div>
+        <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data" class="needs-validation">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> Quiz Title</label>
+                    <input type="text" name="quiz_title" class="form-control" placeholder="Enter quiz title" required value="{{ quiz.title }}">
+                </div>
+
+                <div id="questions-container">
+                    {% for question in quiz.questions.all %}
+                        <div class="question-box mb-3">
+                            <label>Question</label>
+                            <input type="text" name="questions[]" class="form-control mb-2" placeholder="Enter question" value="{{ question.text }}">
+
+                            <label>Options</label>
+                            <div class="options-box">
+                                {% for answer in question.answers.all %}
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <input type="radio" name="correct_answer_{{ forloop.parentloop.counter }}" value="{{ forloop.counter }}" {% if answer.is_correct %}checked{% endif %}>
+                                            </div>
+                                        </div>
+                                        <input type="text" name="options_{{ forloop.parentloop.counter }}[]" class="form-control" placeholder="Enter option" value="{{ answer.text }}">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeQuestion(this)">
+                                <i class="fas fa-trash"></i> Remove Question
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <button type="button" class="btn btn-info mt-3" onclick="addQuestion()">
+                    <i class="fas fa-plus"></i> Add Question
+                </button>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'Instructor_dashboard' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card { margin-top: 50px; border-radius: 12px; }
+    .card-header { font-size: 20px; font-weight: bold; }
+    .form-group label { font-weight: bold; }
+    .form-control { border-radius: 8px; }
+    .btn { border-radius: 8px; }
+    .question-box { border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
+    .options-box { margin-top: 10px; }
+    .input-group-text input { margin-right: 5px; }
+</style>
+
+<script>
+    function addQuestion() {
+        let questionContainer = document.getElementById("questions-container");
+        let div = document.createElement("div");
+        div.classList.add("question-box", "mb-3");
+        div.innerHTML = `
+            <label>Question</label>
+            <input type="text" name="questions[]" class="form-control mb-2" placeholder="Enter question">
+            <label>Options</label>
+            <div class="options-box">
+                ${[1, 2, 3, 4].map(i => `
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <input type="radio" name="correct_answer_new" value="${i}">
+                            </div>
+                        </div>
+                        <input type="text" name="options_new[]" class="form-control" placeholder="Enter option ${i}">
+                    </div>
+                `).join('')}
+            </div>
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeQuestion(this)">
+                <i class="fas fa-trash"></i> Remove Question
+            </button>
+        `;
+        questionContainer.appendChild(div);
+    }
+
+    function removeQuestion(button) {
+        button.parentElement.remove();
+    }
+</script>
+
+{% endblock edit_quiz %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block user_profile %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Your Profile</h2>
+
+                    <!-- Display Django messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <!-- Profile Picture Section -->
+                            <img src="{{ user.profile_pic.url }}" class="img-fluid rounded-circle mb-3" alt="Profile Picture" style="width: 150px; height: 150px; object-fit: cover;">
+                            <h4>{{ user.username }}</h4>
+                        </div>
+
+                        <div class="col-md-8">
+                            <!-- User Info Section -->
+                            <div class="mb-3">
+                                <strong>Email:</strong> {{ user.email }}
+                            </div>
+
+                            <div class="mb-3">
+                                <strong>Instructor:</strong> {{ user.is_instructor|yesno:"Yes,No" }}
+                            </div>
+
+                            <div class="text-center">
+                                <!-- Edit Profile Button -->
+                                <a href="#" class="btn btn-warning btn-sm">Edit Profile</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!--Change Profile Picture-->
+
+                    <h5 class="text-center">Change Profile Picture</h5>
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation mt-4" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <input type="file" name="profile_pic" class="form-control" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Update Profile Picture</button>
+                    </form>
+
+                    <p class="text-center mt-3">
+                        <a href="{% url 'home' %}" class="text-decoration-none">Go back to Home</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Image Preview (optional) -->
+<script>
+    function previewImage(event) {
+        let reader = new FileReader();
+        reader.onload = function () {
+            let preview = document.getElementById("profilePreview");
+            preview.src = reader.result;
+            preview.classList.remove("d-none");
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
+{% endblock user_profile %}

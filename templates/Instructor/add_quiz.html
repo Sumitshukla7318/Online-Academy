@@ -1,0 +1,140 @@
+{% extends "Instructor/instructor_base.html" %}
+{% load static %}
+
+{% block title %}Add Quiz - {{ course.title }}{% endblock %}
+
+{% block add_quiz %}
+<div class="container mt-5 ms-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 ms-5">
+        <h2><i class="fas fa-question-circle text-primary"></i> Add Quiz for {{ course.title }}</h2>
+        <a href="{% url 'Icourse_details' course.id %}" class="btn btn-dark btn-sm">
+            <i class="fas fa-arrow-left"></i> Back to Course
+        </a>
+    </div>
+
+    <!-- Flash Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" ms-5>
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow-lg p-4 ms-5">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="title"><i class="fas fa-heading"></i> Quiz Title</label>
+                <input type="text" class="form-control" id="title" name="title" placeholder="Enter quiz title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description"><i class="fas fa-file-alt"></i> Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter quiz description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="duration"><i class="fas fa-clock"></i> Duration (minutes)</label>
+                <input type="number" class="form-control" id="duration" name="duration" placeholder="Enter duration" required>
+            </div>
+
+            <h5 class="mt-4"><i class="fas fa-list-ul text-success"></i> Add Questions</h5>
+            <div id="question-container">
+                <div class="question-item">
+                    <div class="form-group">
+                        <label><i class="fas fa-question"></i> Question</label>
+                        <input type="text" class="form-control" name="questions[]" placeholder="Enter question" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-list"></i> Options</label>
+                        <div class="d-flex flex-column">
+                            <div>
+                                <input type="radio" name="correct_answer_0" value="A" required>
+                                <input type="text" class="form-control d-inline w-75" name="option_0_A" placeholder="Option A" required>
+                            </div>
+                            <div>
+                                <input type="radio" name="correct_answer_0" value="B">
+                                <input type="text" class="form-control d-inline w-75" name="option_0_B" placeholder="Option B" required>
+                            </div>
+                            <div>
+                                <input type="radio" name="correct_answer_0" value="C">
+                                <input type="text" class="form-control d-inline w-75" name="option_0_C" placeholder="Option C" required>
+                            </div>
+                            <div>
+                                <input type="radio" name="correct_answer_0" value="D">
+                                <input type="text" class="form-control d-inline w-75" name="option_0_D" placeholder="Option D" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm remove-question mt-2">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-info btn-sm mt-2" id="add-question">
+                <i class="fas fa-plus-circle"></i> Add Another Question
+            </button>
+
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-success mr-2"><i class="fas fa-save"></i> Save Quiz</button>
+                <a href="{% url 'Icourse_details' course.id %}" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let questionCount = 1;
+
+    document.getElementById("add-question").addEventListener("click", function() {
+        let questionContainer = document.getElementById("question-container");
+        let newQuestion = document.createElement("div");
+        newQuestion.classList.add("question-item");
+        newQuestion.innerHTML = `
+            <div class="form-group">
+                <label><i class="fas fa-question"></i> Question</label>
+                <input type="text" class="form-control" name="questions[]" placeholder="Enter question" required>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-list"></i> Options</label>
+                <div class="d-flex flex-column">
+                    <div>
+                        <input type="radio" name="correct_answer_${questionCount}" value="A" required>
+                        <input type="text" class="form-control d-inline w-75" name="option_${questionCount}_A" placeholder="Option A" required>
+                    </div>
+                    <div>
+                        <input type="radio" name="correct_answer_${questionCount}" value="B">
+                        <input type="text" class="form-control d-inline w-75" name="option_${questionCount}_B" placeholder="Option B" required>
+                    </div>
+                    <div>
+                        <input type="radio" name="correct_answer_${questionCount}" value="C">
+                        <input type="text" class="form-control d-inline w-75" name="option_${questionCount}_C" placeholder="Option C" required>
+                    </div>
+                    <div>
+                        <input type="radio" name="correct_answer_${questionCount}" value="D">
+                        <input type="text" class="form-control d-inline w-75" name="option_${questionCount}_D" placeholder="Option D" required>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-danger btn-sm remove-question mt-2">
+                <i class="fas fa-trash"></i> Remove
+            </button>
+        `;
+        questionContainer.appendChild(newQuestion);
+        questionCount++;
+    });
+
+    document.addEventListener("click", function(event) {
+        if (event.target.classList.contains("remove-question")) {
+            event.target.closest(".question-item").remove();
+        }
+    });
+});
+</script>
+{% endblock add_quiz %}

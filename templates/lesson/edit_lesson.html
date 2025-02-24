@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% comment %} {% load edit_lesson %} {% endcomment %}
+
+{% block edit_lesson %}
+<div class="container mt-5">
+    <h2>Edit Lesson - {{ lesson.title }}</h2>
+
+    <form method="post" enctype="multipart/form-data" class="shadow-lg p-4">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Lesson Title</label>
+            <input type="text" name="title" value="{{ lesson.title }}" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label>Lesson Content</label>
+            <div id="editor">{{ lesson.content|safe }}</div>
+            <textarea name="content" id="hiddenContent" hidden>{{ lesson.content }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Video URL</label>
+            <input type="url" name="video_url" value="{{ lesson.video_url }}" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+        <a href="{% url 'course_lessons' id=lesson.course.id %}" class="btn btn-secondary mt-3">Cancel</a>
+    </form>
+</div>
+
+<!-- Quill.js (No API Key Required) -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+<script>
+    var quill = new Quill('#editor', {
+        theme: 'snow'
+    });
+
+    document.querySelector('form').onsubmit = function() {
+        document.querySelector('#hiddenContent').value = quill.root.innerHTML;
+    };
+</script>
+
+{% endblock edit_lesson %}

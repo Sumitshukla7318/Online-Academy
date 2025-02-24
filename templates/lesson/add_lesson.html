@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block add_lesson %}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="fas fa-plus-circle"></i> Add New Lesson</h4>
+        </div>
+        <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data" class="needs-validation">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> Lesson Title</label>
+                    <input type="text" name="title" class="form-control" placeholder="Enter lesson title" required>
+                </div>
+
+                <div id="sections-container"></div>
+
+                <button type="button" class="btn btn-info mt-3" onclick="addSection()">
+                    <i class="fas fa-plus"></i> Add Section
+                </button>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-sort-numeric-up"></i> Lesson Order</label>
+                    <input type="number" name="order" class="form-control" placeholder="Enter lesson order (Optional)">
+                </div>
+                
+                
+                <input type="hidden" name="sections_data" id="sections_data">
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'Instructor_dashboard' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </a>
+                    <button type="submit" class="btn btn-success" onclick="saveSections()">
+                        <i class="fas fa-save"></i> Save Lesson
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+<style>
+    .card { margin-top: 50px; border-radius: 12px; }
+    .card-header { font-size: 20px; font-weight: bold; }
+    .form-group label { font-weight: bold; }
+    .form-control { border-radius: 8px; }
+    .btn { border-radius: 8px; }
+    .editor-container { margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    .ql-editor { min-height: 120px; }
+</style>
+
+<script>
+    let sectionCount = 0;
+    function addSection() {
+        sectionCount++;
+        let section = document.createElement('div');
+        section.classList.add('section', 'mb-3');
+        section.innerHTML = `
+            <input type="text" name="headings[]" class="form-control mb-2" placeholder="Section Heading">
+            <div id="editor-${sectionCount}" class="editor-container"></div>
+            <input type="url" name="video_urls[]" class="form-control mb-2" placeholder="Video URL (Optional)">
+            <div id="pdf-container-${sectionCount}"></div>
+            <button type="button" class="btn btn-sm btn-primary" onclick="addPdf(${sectionCount})">Add PDF</button>
+            <div id="image-container-${sectionCount}"></div>
+            <button type="button" class="btn btn-sm btn-warning" onclick="addImage(${sectionCount})">Add Image</button>
+            <input type="text" name="examples[]" class="form-control mt-2" placeholder="Example (Optional)">
+            <button type="button" class="btn btn-danger mt-2" onclick="removeSection(this)">
+                <i class="fas fa-trash"></i> Remove
+            </button>
+        `;
+        document.getElementById('sections-container').appendChild(section);
+        let quill = new Quill(`#editor-${sectionCount}`, { theme: 'snow', placeholder: 'Write your content here...' });
+        section.dataset.quill = sectionCount;
+    }
+    
+    function addPdf(sectionId) {
+        let container = document.getElementById(`pdf-container-${sectionId}`);
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.name = `pdf_files_${sectionId}[]`;
+        input.classList.add('form-control', 'mb-2');
+        container.appendChild(input);
+    }
+    
+    function addImage(sectionId) {
+        let container = document.getElementById(`image-container-${sectionId}`);
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.name = `image_files_${sectionId}[]`;
+        input.classList.add('form-control', 'mb-2');
+        container.appendChild(input);
+    }
+    
+    function removeSection(button) {
+        button.parentElement.remove();
+    }
+    
+    function saveSections() {
+        let data = [];
+        document.querySelectorAll('.section').forEach((section) => {
+            let heading = section.querySelector('input[name="headings[]"]').value;
+            let quillInstance = Quill.find(section.querySelector('.editor-container'));
+            let content = quillInstance.root.innerHTML;
+            let video_url = section.querySelector('input[name="video_urls[]"]').value;
+            let example = section.querySelector('input[name="examples[]"]').value;
+            data.push({ heading, content, video_url, example });
+        });
+        document.getElementById('sections_data').value = JSON.stringify(data);
+    }
+</script>
+
+{% endblock add_lesson %}

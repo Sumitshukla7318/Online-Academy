@@ -1,0 +1,50 @@
+{% extends 'base.html' %}  
+
+{% block add_course %}
+<div class="container mt-4">
+    <h2 class="mb-4">Add New Course</h2>
+    
+    <form method="post" enctype="multipart/form-data" class="p-4 shadow bg-white rounded">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="title">Course Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Course Description</label>
+            <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="category">Category</label>
+            <input type="text" class="form-control" id="category" name="category" required>
+        </div>
+
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label for="level">Difficulty Level</label>
+            <select class="form-control" id="level" name="level">
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="thumbnail">Thumbnail</label>
+            <input type="file" class="form-control-file" id="thumbnail" name="thumbnail" accept="image/*">
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Save Course
+        </button>
+        <a href="{% url 'Instructor_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock add_course %}

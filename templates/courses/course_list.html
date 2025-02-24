@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Courses - Online Academy{% endblock %}
+
+{% block courses %}
+<style>
+    .course-card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: 0.3s;
+        background: #fff;
+    }
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .course-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    .course-info {
+        padding: 15px;
+    }
+    .course-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+    .course-price {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+    .course-instructor {
+        font-size: 0.9rem;
+        color: #555;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="container my-4">
+    <h2 class="text-center">Explore Our Courses</h2>
+    <p class="text-center text-muted">Choose from a variety of expert-led courses in Python, Machine Learning, and more.</p>
+</div>
+
+<!-- Course Grid -->
+<div class="container">
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-md-4 mb-4">
+            <div class="course-card">
+                <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="course-img">
+                <div class="course-info">
+                    <h5 class="course-title">{{ course.title }}</h5>
+                    <p class="course-instructor">Instructor: {{ course.instructor.username }}</p>
+                    <p class="course-price">${{ course.price }}</p>
+                    <a href="{% url 'course_detail' course.id %}" class="btn btn-primary btn-sm mt-2">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">No courses available.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock courses %}

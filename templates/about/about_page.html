@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Online Academy{% endblock %}
+
+{% block about %}
+<style>
+    .about-hero {
+        margin-top:80px;
+        background: url("{% static 'images/about_banner.jpg' %}") no-repeat center center/cover;
+        padding: 100px 0;
+        color: white;
+        text-align: center;
+    }
+    .icon-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        transition: 0.3s;
+    }
+    .icon-box:hover {
+        background: #007bff;
+        color: white;
+    }
+    .instructor-card {
+        text-align: center;
+    }
+    .instructor-card img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+    }
+    .testimonial {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="about-hero">
+    <h1>Welcome to Our Academy</h1>
+    <p>Your gateway to knowledge and success</p>
+</div>
+
+<!-- Our Mission Section -->
+<section class="container my-5">
+    <div class="text-center">
+        <h2 class="mb-4">Our Mission</h2>
+        <p class="lead">Empowering students with quality education and hands-on learning in Python, Machine Learning, and Data Science.</p>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="container my-5">
+    <div class="text-center mb-4">
+        <h2>Why Choose Us?</h2>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="icon-box">
+                <i class="fas fa-chalkboard-teacher fa-3x mb-3"></i>
+                <h4>Expert Instructors</h4>
+                <p>Learn from industry professionals with years of experience.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="icon-box">
+                <i class="fas fa-book-open fa-3x mb-3"></i>
+                <h4>Comprehensive Courses</h4>
+                <p>From Python basics to advanced AI & Machine Learning.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="icon-box">
+                <i class="fas fa-certificate fa-3x mb-3"></i>
+                <h4>Certification</h4>
+                <p>Get certified and boost your career opportunities.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Meet Our Instructors -->
+<section class="container my-5">
+    <div class="text-center mb-4">
+        <h2>Meet Our Instructors</h2>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="instructor-card">
+                <img src="{% static 'images/instructor1.jpg' %}" alt="Instructor 1">
+                <h5>Sumit Shukla</h5>
+                <p>Python & Django Expert</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="instructor-card">
+                <img src="{% static 'images/instructor2.jpg' %}" alt="Instructor 2">
+                <h5>Mukesh Sharma</h5>
+                <p>Machine Learning Specialist</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="instructor-card">
+                <img src="{% static 'images/instructor3.jpg' %}" alt="Instructor 3">
+                <h5>Kaif Hashmi</h5>
+                <p>Data Science Mentor</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Success Stories -->
+<section class="container my-5">
+    <div class="text-center mb-4">
+        <h2>Success Stories</h2>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="testimonial">
+                <p>"This academy helped me land my first job in data science!"</p>
+                <h6>- Rahul Sharma</h6>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="testimonial">
+                <p>"The hands-on projects were the best part. Highly recommended!"</p>
+                <h6>- Sneha Kapoor</h6>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="text-center my-5">
+    <h3>Ready to Learn?</h3>
+    <p>Start your journey with us today!</p>
+    <a href="{% url 'courses' %}" class="btn btn-primary btn-lg">Browse Courses</a>
+</section>
+
+{% endblock about %}

@@ -1,0 +1,74 @@
+{% extends "instructor/instructor_base.html" %}
+
+{% block Instructor_earning %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Total Earnings Card -->
+        <div class="col-md-12 ms-5">
+            <div class="card text-white bg-success shadow-lg mb-4 ms-5">
+                <div class="card-body text-center ms-4">
+                    <h4 class="mb-3">Total Earnings</h4>
+                    <h1 class="display-4">${{ total_earnings|floatformat:2 }}</h1>
+                    <button class="btn btn-light mt-3 px-4"><i class="fas fa-wallet"></i> Withdraw Earnings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course-wise Earnings -->
+    <div class="row ms-5">
+        <div class="col-md-8 ">
+            <div class="card shadow-lg ms-5">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-chart-bar"></i> Course-wise Earnings</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Course</th>
+                                <th>Revenue</th>
+                                <th>Students Enrolled</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in course_earnings %}
+                            <tr>
+                                <td>{{ course.title }}</td>
+                                <td>${{ course.total_revenue|default:"0.00" }}</td>
+                                <td>{{ course.payments.count }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No earnings yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Payments -->
+        <div class="col-md-4">
+            <div class="card shadow-lg">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-receipt"></i> Recent Payments</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for payment in recent_payments %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>{{ payment.course.title }}</span>
+                            <span class="text-success">${{ payment.amount }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-center text-muted">No recent payments.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock Instructor_earning %}

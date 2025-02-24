@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Start Quiz{% endblock %}
+
+{% block start_quiz %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Left Panel: Quiz List -->
+        <div class="col-md-4 mt-4">
+            <div class="card quiz-list-card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h4><i class="fas fa-list"></i> Available Quizzes</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for q in quizzes %}
+                            <li class="list-group-item quiz-item">
+                                <a href="{% url 'start_quiz' course_id=q.course.id quiz_id=q.id %}" class="text-decoration-none text-dark">
+                                    {{ q.title }}
+                                </a>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">No quizzes available</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Quiz Questions -->
+        <div class="col-md-8 mt-4">
+            <div class="card quiz-card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4><i class="fas fa-question-circle"></i> {{ quiz.title }}</h4>
+                </div>
+                <div class="card-body">
+                    {% if quiz and quiz.questions.all %}
+                        <form method="POST">
+                            {% csrf_token %}
+                            {% for question in quiz.questions.all %}
+                                <div class="mb-4">
+                                    <strong class="question-text">Q{{ forloop.counter }}: {{ question.text }}</strong>
+                                    <ul class="list-group mt-2">
+                                        {% for option in question.answers.all %}
+                                            <li class="list-group-item option-item">
+                                                <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}">
+                                                {{ option.text }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-dark mt-3 w-100">Submit Quiz</button>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-danger text-center" role="alert">
+                            <i class="fas fa-exclamation-triangle"></i> No Questions Available for this Quiz!
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Global Styles */
+    .card { border-radius: 10px; transition: 0.3s; }
+    .card:hover { transform: scale(1.02); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
+    
+    /* Quiz List Card */
+    .quiz-list-card { background: #f8f9fa; }
+    .quiz-list-card .card-header { font-size: 20px; font-weight: bold; }
+    .quiz-item a { font-weight: bold; transition: 0.3s; }
+    .quiz-item:hover { background: #e9ecef; }
+
+    /* Quiz Questions Card */
+    .quiz-card { background: #ffffff; }
+    .quiz-card .card-header { font-size: 22px; font-weight: bold; }
+
+    /* Question Text */
+    .question-text { font-size: 18px; font-weight: bold; color: #343a40; }
+
+    /* Option Styling */
+    .option-item { background: #f8f9fa; border-radius: 5px; transition: 0.3s; cursor: pointer; }
+    .option-item:hover { background: #e9ecef; }
+
+    /* Submit Button */
+    .btn-dark { font-size: 16px; font-weight: bold; border-radius: 8px; }
+    .btn-dark:hover { background: #343a40; }
+
+    /* No Questions Alert */
+    .alert-danger { font-size: 16px; font-weight: bold; }
+</style>
+
+{% endblock start_quiz %}

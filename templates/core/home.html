@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Home | Online Academy{% endblock %}
+{% block home %}
+
+
+<!-- ===== Hero Section ===== -->
+<header class="bg-primary text-white text-center py-5">
+    <div class="container">
+        <h1 class="display-4">Learn From The Best</h1>
+        <p class="lead">Join thousands of students learning new skills and boosting their careers.</p>
+        <a href="#" class="btn btn-light btn-lg me-3">Explore Courses</a>
+        <a href="{% url "signup" %}" class="btn btn-outline-light btn-lg">Join Now</a>
+    </div>
+</header>
+
+<!-- ===== Featured Courses ===== -->
+<section class="container my-5">
+    <h2 class="text-center mb-4">Popular Courses</h2>
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow">
+                <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <p class="card-text text-muted">Instructor: {{ course.instructor.username }}</p>
+                    <p class="card-text">{{ course.short_description }}</p>
+                    <a href="{% url 'course_detail' course.id %}" class="btn btn-primary w-100">View Course</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted">No courses available at the moment.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- ===== Why Choose Us Section ===== -->
+<section class="bg-light py-5">
+    <div class="container text-center">
+        <h2>Why Choose Online Academy?</h2>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <i class="fas fa-chalkboard-teacher fa-3x text-primary"></i>
+                <h4 class="mt-3">Expert Instructors</h4>
+                <p>Learn from industry leaders and professionals.</p>
+            </div>
+            <div class="col-md-4">
+                <i class="fas fa-laptop-code fa-3x text-primary"></i>
+                <h4 class="mt-3">Flexible Learning</h4>
+                <p>Learn at your own pace from anywhere.</p>
+            </div>
+            <div class="col-md-4">
+                <i class="fas fa-certificate fa-3x text-primary"></i>
+                <h4 class="mt-3">Certified Courses</h4>
+                <p>Earn certificates to boost your career.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== Testimonials Section ===== -->
+<section class="container my-5">
+    <h2 class="text-center mb-4">What Our Students Say</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <p class="card-text">"Online Academy changed my career! The courses are easy to follow and informative."</p>
+                    <h5 class="card-title">- Sarah Johnson</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <p class="card-text">"The best online learning platform with expert instructors and practical knowledge!"</p>
+                    <h5 class="card-title">- Mark Wilson</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <p class="card-text">"Loved the flexibility of learning at my own pace. Highly recommend!"</p>
+                    <h5 class="card-title">- Emily Davis</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== Call to Action Section ===== -->
+<section class="bg-primary text-white text-center py-5">
+    <h2>Start Your Learning Journey Today</h2>
+    <p class="lead">Join Online Academy and upgrade your skills now.</p>
+    <a href="{% url 'signup' %}" class="btn btn-light btn-lg">Get Started</a>
+</section>
+
+{% endblock home %}

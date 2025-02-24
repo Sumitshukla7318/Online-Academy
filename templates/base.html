@@ -1,0 +1,132 @@
+{% load custom_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Online Academy{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Custom CSS -->
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+
+    <!-- ====== Navbar ====== -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url "home" %}">
+                <i class="fas fa-graduation-cap"></i> Online Academy
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url "home" %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url "courses" %}">Courses</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'my_courses' %}">My Courses</a> </li>                    
+                    <li class="nav-item"><a class="nav-link" href="{% url "about" %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url "contact" %}">Contact</a></li>
+                    
+                    {% if request.session.user_id %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i> Profile
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
+                                
+                                {% if request.session.user_id|is_instructor %}
+                                    <li><a class="dropdown-item" href="{% url "Instructor_dashboard" %}">Instructor Dashboard</a></li>
+                                {% endif %}
+                           
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link btn btn-outline-light px-3" href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-item ms-2"><a class="nav-link btn btn-dark text-white px-3" href="{% url 'signup' %}">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ====== Hero Section (Optional) ====== -->
+    {% if request.path == "/" %}
+    <header class="bg-primary text-white text-center py-5">
+        <h1>Welcome to Online Academy</h1>
+        <p>Learn from the best instructors and enhance your skills.</p>
+        <a href="#" class="btn btn-light btn-lg">Explore Courses</a>
+    </header>
+    {% endif %}
+
+    <!-- ====== Flash Messages ====== -->
+    <div class="container mt-3">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- ====== Main Content ====== -->
+    <div class="container mt-4">
+        
+        {% block user_login %}{% endblock user_login  %}
+        {% block user_logout %}{% endblock user_logout %}
+        {% block user_profile %}{% endblock user_profile %}
+        {% block user_signup %}{% endblock user_signup %}
+        {% block home %}{% endblock home %}
+        {% block instructor_base %}{% endblock instructor_base %}
+        {% block add_course %}{% endblock add_course %}
+        {% block about %}{% endblock about %}
+        {% block courses %}{% endblock courses %}
+        {% block contactus %}{% endblock contactus %}
+        {% block course_detail %}{% endblock course_detail %}
+        {% block my_courses %}{% endblock my_courses %}
+        {% block add_lesson %}{% endblock add_lesson %}
+        {% block view_lessons %}{% endblock view_lessons %}
+        {% block manage_lesson %}{% endblock manage_lesson %}
+        {% block start_learning %}{% endblock start_learning %}
+        {% block edit_lesson %}{% endblock edit_lesson %}
+        {% block start_quiz %}{% endblock start_quiz %}
+        {% block quiz_result %}{% endblock quiz_result %}
+
+
+
+    </div>
+
+    <!-- ====== Footer ====== -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <div class="container">
+            <p class="mb-2">© 2025 Online Academy. All Rights Reserved.</p>
+            <p>
+                <a href="#" class="text-white me-3"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="text-white"><i class="fab fa-linkedin"></i></a>
+            </p>
+            <p class="mb-0">
+                <a href="#" class="text-white me-3">Terms</a>
+                <a href="#" class="text-white">Privacy</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+

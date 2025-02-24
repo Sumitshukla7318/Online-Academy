@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Courses - Online Academy{% endblock %}
+
+{% block my_courses %}
+<div class="container my-4 mt-5">
+    <h2 class="text-center">My Courses</h2>
+    <p class="text-center text-muted">Continue your learning journey!</p>
+</div>
+
+<div class="container">
+    <div class="row">
+        {% for enrollment in enrolled_courses %}
+        <div class="col-md-4 mb-4">
+            <div class="course-card">
+                <img src="{{ enrollment.course.thumbnail.url }}" alt="{{ enrollment.course.title }}" class="course-img">
+                <div class="course-info">
+                    <h5 class="course-title">{{ enrollment.course.title }}</h5>
+                    <p class="course-instructor">Instructor: {{ enrollment.course.instructor.username }}</p>
+                    
+                    <a href="{% url 'course_lessons' enrollment.course.id %}" class="btn btn-success btn-sm mt-2">
+                        <i class="fas fa-play-circle"></i> Start Learning
+                    </a>
+
+                    {% if enrollment.course.quizzes.all %}
+                    <a href="{% url 'start_quiz' course_id=enrollment.course.id quiz_id=0  %}" class="btn btn-primary btn-sm mt-2">
+                        <i class="fas fa-question-circle"></i> Start Quiz
+                    </a>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">You are not enrolled in any courses.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock my_courses %}
