@@ -6,10 +6,19 @@ from django.contrib import messages
 import json
 from django.core.files.storage import default_storage
 from courses.models import Enrollment
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from analytics.models import UserProgress
+from users.models import User
 
 # Create your views here.
 class CourseLession(View):
     def get(self, request, id, lesson_id=None):
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
         course = get_object_or_404(Course, id=id)
 
         user=request.session['user_id']
@@ -41,8 +50,57 @@ class CourseLession(View):
     def post(self,request,id):
         pass
 
+
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class MarkLessonCompleted(View):
+    def post(self, request, course_id, lesson_id):
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
+        try:
+            # Fetch user instance from session ID
+            user_id = request.session.get('user_id')
+            user = get_object_or_404(User, id=user_id)  
+
+            # Get course and lesson instances
+            course = get_object_or_404(Course, id=course_id)
+            lesson = get_object_or_404(Lesson, id=lesson_id)
+
+            # Get or create UserProgress entry
+            progress, created = UserProgress.objects.get_or_create(user=user, course=course)
+
+            # Parse JSON request data
+            data = json.loads(request.body)
+
+            # Update completed lessons
+            if data.get("completed", False):
+                progress.completed_lessons.add(lesson)  # Add lesson to completed lessons
+            else:
+                progress.completed_lessons.remove(lesson)  # Remove lesson from completed lessons
+
+            # Update lessons completed count
+            progress.lessons_completed = progress.completed_lessons.count()
+            progress.save()
+            print("sucessfully completed")
+            return JsonResponse({"message": "Lesson completion status updated", "completed_count": progress.lessons_completed})
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+
 class AddLesson(View):
     def get(self, request, id):
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
+        user=User.objects.get(id=user_id)
+        if not user.role.lower()=='instructor':
+            messages.error(request,"You have no permission to add lesson")
         return render(request, 'lesson/add_lesson.html', {"id": id})
 
     def post(self, request, id):
@@ -125,6 +183,13 @@ class ViewLesson(View):
 
 class EditLesson(View):
     def get(self, request, id):
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
+        user=User.objects.get(id=user_id)
+        if not user.role.lower()=="instructor":
+            messages.error(request,"You have no permission to Edit Lesson")
         lesson = get_object_or_404(Lesson, id=id)
         return render(request, 'lesson/edit_lesson.html', {'lesson': lesson})
 

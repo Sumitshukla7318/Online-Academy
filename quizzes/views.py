@@ -11,6 +11,13 @@ from django.utils.timezone import now
 class AddQuiz(View):
     
     def get(self, request, course_id):
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
+        user=User.objects.get(id=user_id)
+        if not user.role.lower()=='instructor':
+            messages.error(request,"you have no permission do this")
         course = get_object_or_404(Course, id=course_id)  # Fetch course
         return render(request, "Instructor/add_quiz.html", {"course": course})
 
@@ -45,6 +52,10 @@ class AddQuiz(View):
 
 class StartQuizView(View):
     def get(self, request, course_id=None, quiz_id=None):
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
         course = get_object_or_404(Course, id=course_id)
         quizzes = Quiz.objects.filter(course=course)
         
@@ -64,9 +75,14 @@ class StartQuizView(View):
         correct_answers = 0
         incorrect_answers = 0
 
-        attempt = QuizAttempt.objects.create(
-            user=user, quiz=quiz, score=0, correct_answers=0, incorrect_answers=0, completed=True, timestamp=now()
+        # Check if the user has an existing attempt for this quiz
+        attempt, created = QuizAttempt.objects.get_or_create(
+            user=user, quiz=quiz, defaults={'score': 0, 'correct_answers': 0, 'incorrect_answers': 0, 'completed': True, 'timestamp': now()}
         )
+
+        # Delete previous question attempts if re-attempting
+        if not created:
+            attempt.question_attempts.all().delete()
 
         for question in questions:
             selected_option_id = request.POST.get(f"question_{question.id}")
@@ -86,16 +102,26 @@ class StartQuizView(View):
                 is_correct=is_correct
             )
 
+        # Update attempt instead of creating a new one
         attempt.score = score
         attempt.correct_answers = correct_answers
         attempt.incorrect_answers = incorrect_answers
+        attempt.timestamp = now()
         attempt.save()
 
-        return redirect('quiz_result', quiz_id=quiz.id, attempt_id=attempt.id)
+        messages.success(request, f"Quiz completed! Your score: {score}/{len(questions)}")
+        return redirect('quiz_result', quiz_id=quiz.id)
 
 
 class EditQuiz(View):
     def get(self, request, quiz_id):
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
+        user=User.objects.get(id=user_id)
+        if not user.role.lower()=='instructor':
+            messages.error(request,"you have no permission do this")
         quiz = get_object_or_404(Quiz, id=quiz_id)
         return render(request, "quiz/edit_quiz.html", {"quiz": quiz})
 
@@ -134,6 +160,10 @@ class EditQuiz(View):
 
 class DeleteQuiz(View):
     def get(self,request,quiz_id):
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
         quiz=Quiz.objects.get(id=quiz_id)
         course_id=quiz.course.id
         quiz.delete()
@@ -141,6 +171,10 @@ class DeleteQuiz(View):
     
 class QuizResult(View):
     def get(self, request, quiz_id):
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
         # Get the latest attempt of the logged-in user
         quiz = get_object_or_404(Quiz, id=quiz_id)
         latest_attempt = QuizAttempt.objects.filter(user=User.objects.get(id=request.session['user_id']), quiz=quiz, completed=True).order_by('-timestamp').first()

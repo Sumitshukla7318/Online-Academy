@@ -8,9 +8,20 @@ from django.contrib import messages
 from Payment.models import Payment
 from django.db.models import Sum,Q,Count
 from django.contrib.auth.hashers import check_password, make_password
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 class AddCourse(View):
     def get(self,request):
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
+        user=User.objects.get(id=user_id)
+        if not user.role.lower()=="instructor":
+            messages.error(request,"You have no permission to add course")
         return render(request,"courses/add_course.html")
     
     def post(self, request):
@@ -45,14 +56,18 @@ class AddCourse(View):
 
 class CourseDetail(View):
     def get(self, request, id):
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
         course = get_object_or_404(Course, id=id)
         is_enrolled = False  
         
         user=User.objects.get(id=request.session['user_id'])
 
-        print("yes authenticated")
+        # print("yes authenticated")
         is_enrolled = Enrollment.objects.filter(user=user, course=course).exists()
-        print(is_enrolled,"nnnnnnnnnnnnnn")
+        
 
         return render(request, "courses/course_detail.html", {
             "course": course,
@@ -84,8 +99,10 @@ class Courses(View):
     
 class MyCourses(View):
     def get(self,request):
-        if not request.session['user_id']:
-            return redirect('login')
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
         user=User.objects.get(id=request.session['user_id'])
         enrolled_courses = Enrollment.objects.filter(user=user).select_related('course')
         return render(request, 'courses/my_courses.html', {'enrolled_courses': enrolled_courses})
@@ -99,6 +116,9 @@ class InstructorCourses(View):
         user_id = request.session.get('user_id')
         if not user_id:
             return redirect('login') 
+        user=User.objects.get(id=user_id)
+        if not user.role.lower()=="instructor":
+            messages.error(request,"Only Instrucotr can view their courses")
         
         user = User.objects.get(id=user_id)
         courses = Course.objects.filter(instructor=user) 
@@ -113,6 +133,13 @@ class InstructorCourses(View):
 
 class InstructorCourseDetail(View):
     def get(self, request, id):
+        user_id=request.session.get('user_id')
+        if not user_id:
+            messages.error(request,"you need to login first!")
+            return redirect("login")
+        user=User.objects.get(id=user_id)
+        if not user.role.lower()=='instructor':
+            messages.error(request,"No permission")
         course = get_object_or_404(Course, id=id)
         lessons = course.lessons.all()
         quizzes = course.quizzes.all()
@@ -158,9 +185,9 @@ class StudentsEnrolledInCourse(View):
         pass
 
 class StudentDetail(View):
-    def get(self,request):
+    def get(self,request,id):
         pass
-    def post(self,request):
+    def post(self,request,id):
         pass
 
 class Earning(View):
@@ -251,3 +278,24 @@ class Settings(View):
 
         return redirect("settings") 
 
+
+class RecommendedCourseView(View):
+    def get(self,request):
+        user = User.objects.get(id=request.session['user_id'])
+        courses = Course.objects.all()
+    
+        # Data Preparation
+        courses_df = pd.DataFrame(list(courses.values('id', 'name', 'tags')))
+        vectorizer = TfidfVectorizer()
+        course_vectors = vectorizer.fit_transform(courses_df['tags'])
+        user_vector = vectorizer.transform([user.interests])
+
+        # Similarity Calculation
+        similarity_scores = cosine_similarity(user_vector, course_vectors)
+        recommended_indices = similarity_scores.argsort()[0][::-1]
+        recommended_courses = [courses[i] for i in recommended_indices[:5]]
+
+        return render(request, 'recommendations.html', {'recommended_courses': recommended_courses})
+
+    def post(self,request):
+        pass

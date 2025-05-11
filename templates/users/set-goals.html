@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Set Your Learning Goal{% endblock %}
+
+{% block goal_setting %}
+<div class="container mt-5">
+    <h2 class="text-center fw-bold">🎯 Set Your Learning Goal</h2>
+    <p class="text-center text-muted">Stay motivated and track your progress effectively.</p>
+
+    <div class="card shadow-lg p-4 mx-auto" style="max-width: 500px; border-radius: 12px;">
+        <form method="POST" action="{% url 'set-goals' %}" class="p-3">
+            {% csrf_token %}
+
+            <!-- Goal Type -->
+            <div class="mb-3">
+                <label class="form-label fw-bold"><i class="fas fa-bullseye"></i> Goal Type</label>
+                <select class="form-select" name="goal_type" required>
+                    <option value="time">Time-based</option>
+                    <option value="task">Task-based</option>
+                    <option value="progress">Progress-based</option>
+                </select>
+            </div>
+
+            <!-- Target Value -->
+            <div class="mb-3">
+                <label class="form-label fw-bold"><i class="fas fa-chart-line"></i> Target Value</label>
+                <input type="number" class="form-control" name="target_value" placeholder="Enter target (e.g., 10 hours)" required>
+            </div>
+
+            <!-- Start Date -->
+            <div class="mb-3">
+                <label class="form-label fw-bold"><i class="fas fa-calendar-alt"></i> Start Date</label>
+                <input type="date" class="form-control" name="start_date" required>
+            </div>
+
+            <!-- End Date -->
+            <div class="mb-3">
+                <label class="form-label fw-bold"><i class="fas fa-calendar-check"></i> End Date</label>
+                <input type="date" class="form-control" name="end_date" required>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save"></i> Set Goal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock goal_setting %}

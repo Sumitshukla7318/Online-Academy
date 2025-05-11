@@ -27,5 +27,8 @@ urlpatterns = [
     path('courses/',include("courses.urls")),
     path('lesson/',include("lessons.urls")),
     path('quizzes/',include("quizzes.urls")),
+    path('analytics/',include('analytics.urls')),
+    path('superadmin/',include('SuperAdmin.urls')),
+    path('notifications/',include('Notifications.urls')),
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

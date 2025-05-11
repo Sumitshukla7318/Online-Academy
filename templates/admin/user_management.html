@@ -1,0 +1,53 @@
+{% extends "admin/admin_base.html" %}
+
+{% block user_management %}
+<div class="content pt-5">
+    <h2>User Management</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined On</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.get_role_display }}</td> <!-- Replace with your role field -->
+                <td>{{ user.date_joined }}</td>
+                <td>
+                    <!-- Delete Form -->
+                    {% if user.is_banned %}
+                    <!-- Restore Form -->
+                    <form method="POST" action="{% url 'restore_user' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <span class="text-danger">
+                            <i class="fas fa-user-slash"></i> User Banned
+                        </span>
+                        <button type="submit" class="btn btn-sm btn-success">
+                            <i class="fas fa-undo"></i> Restore
+                        </button>
+                    </form>
+                    {% else %}
+                    <!-- Delete Form -->
+                    <form method="POST" action="{% url 'delete_user' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock user_management %}

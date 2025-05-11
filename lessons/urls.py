@@ -9,7 +9,8 @@ urlpatterns = [
     path('manage_lessons/<int:id>/',views.ManageLesson.as_view(),name='manage_lessons'),
     path('edit_lesson/<int:id>/',views.EditLesson.as_view(),name="edit_lesson"),
     path('view_lesson/<int:id>/',views.ViewLesson.as_view(),name='view_lesson'),  
-    path('delete_lesson/<int:lesson_id>/',views.DeleteLesson.as_view(),name='delete_lesson'),  
+    path('delete_lesson/<int:lesson_id>/',views.DeleteLesson.as_view(),name='delete_lesson'),
+    path('course/<int:course_id>/lesson/<int:lesson_id>/complete/',views.MarkLessonCompleted.as_view(), name='mark_lesson_completed'),  
 
 
 ]

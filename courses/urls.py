@@ -11,7 +11,6 @@ urlpatterns = [
     path('Iedit_course/<int:id>/',views.EditCourse.as_view(),name='Iedit_course'),
     path('Idelete_course/<int:id>/',views.DeleteCourse.as_view(),name='Idelete_course'),
     path('students/',views.StudentsEnrolledInCourse.as_view(),name="students"),
-    path('student_detail/<int:id>/',views.StudentDetail.as_view(),name='student_detail'),
     path('earnings',views.Earning.as_view(),name='earnings'),
     path('settings',views.Settings.as_view(),name='settings'),
     

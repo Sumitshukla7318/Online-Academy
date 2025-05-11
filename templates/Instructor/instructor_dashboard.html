@@ -1,12 +1,12 @@
 {% extends 'instructor/instructor_base.html' %}
 
 {% block Instructor %}
-<div class="container-fluid">
-    <div class="row">
+<div class="container-fluid ml-5 pl-5">
+    <div class="row ml-5 pl-5">
         <!-- Sidebar -->
         
         <!-- Main Dashboard Content -->
-        <main class="col-md-10 ml-sm-auto px-6 ms-5 mt-5">
+        <main class="col-md-10 offset-md-2">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 ms-5">
                 <h2>Dashboard</h2>
                 <a href="{% url 'add_course' %}" class="btn btn-primary">
@@ -21,7 +21,7 @@
                     <div class="card bg-primary text-white">
                         <div class="card-body">
                             <h5>Total Courses</h5>
-                            <h2>12</h2>
+                            <h2>{{course_count}}</h2>
                         </div>
                     </div>
                 </div>

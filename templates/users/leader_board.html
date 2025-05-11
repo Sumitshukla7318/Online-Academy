@@ -1,0 +1,30 @@
+
+{% extends "base.html" %}
+
+{% block Leaderboard %}
+<div class="container mt-5 pt-4">
+    <h2 class="text-center mb-4 mt-5">🏆 Course Leaderboard</h2>
+    <table class="table table-hover shadow-lg">
+        <thead class="thead-dark">
+            <tr>
+                <th>Rank</th>
+                <th>User</th>
+                <th>Lessons Completed</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in top_users %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ user.user.username }}</td>
+                <td>{{ user.lessons_completed }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center">No progress yet</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock Leaderboard %}

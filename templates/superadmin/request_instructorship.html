@@ -1,0 +1,55 @@
+{% extends 'base.html' %}  <!-- Assuming you have a base template -->
+
+{% block request_instructorship %}
+<div class="container mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title text-center">Request Instructorship</h3>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'request_instructorship' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="aadhar_number">Aadhar Number</label>
+                            <input type="text" class="form-control" id="aadhar_number" name="aadhar_number" placeholder="Enter 12-digit Aadhar Number" required>
+                            <small class="form-text text-muted">Please enter your 12-digit Aadhar number.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pan_number">PAN Number</label>
+                            <input type="text" class="form-control" id="pan_number" name="pan_number" placeholder="Enter 10-character PAN Number" required>
+                            <small class="form-text text-muted">Please enter your 10-character PAN number.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="account_number">Bank Account Number</label>
+                            <input type="text" class="form-control" id="account_number" name="account_number" placeholder="Enter your Bank Account Number" required>
+                            <small class="form-text text-muted">Please enter your valid bank account number.</small>
+                        </div>
+
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">Submit Request</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-muted text-center">
+                    <p>Your request will be reviewed by the SuperAdmin. You will be notified once it's approved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock request_instructorship %}

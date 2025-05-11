@@ -40,13 +40,13 @@
 </style>
 
 <!-- Page Header -->
-<div class="container my-4">
+<div class="container my-4 mt-5 pt-4">
     <h2 class="text-center">Explore Our Courses</h2>
     <p class="text-center text-muted">Choose from a variety of expert-led courses in Python, Machine Learning, and more.</p>
 </div>
 
 <!-- Course Grid -->
-<div class="container">
+<div class="container ">
     <div class="row">
         {% for course in courses %}
         <div class="col-md-4 mb-4">
@@ -54,7 +54,7 @@
                 <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="course-img">
                 <div class="course-info">
                     <h5 class="course-title">{{ course.title }}</h5>
-                    <p class="course-instructor">Instructor: {{ course.instructor.username }}</p>
+                    <p class="course-instructor">Instructor: {{ course.instructor.full_name }}</p>
                     <p class="course-price">${{ course.price }}</p>
                     <a href="{% url 'course_detail' course.id %}" class="btn btn-primary btn-sm mt-2">View Details</a>
                 </div>

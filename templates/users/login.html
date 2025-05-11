@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block user_login %}
 <div class="container mt-5">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center pt-5">
         <div class="col-md-5">
             <div class="card shadow-lg">
                 <div class="card-body">
                     <h2 class="text-center mb-4">Login</h2>
 
-                    <!-- messages -->
+                    <!-- Messages -->
                     {% if messages %}
                         {% for message in messages %}
                             <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
@@ -20,18 +20,26 @@
                     <form method="POST" class="needs-validation" novalidate>
                         {% csrf_token %}
 
+                        <!-- Username -->
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
-                            <input type="text" name="username" id="username" class="form-control" placeholder="Enter username" required>
+                            <input type="text" name="username" id="username" class="form-control" placeholder="Enter username" required autofocus>
                             <div class="invalid-feedback">Please enter your username.</div>
                         </div>
 
+                        <!-- Password with Eye Icon -->
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required>
+                            <div class="input-group">
+                                <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required autocomplete="off">
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
                             <div class="invalid-feedback">Please enter your password.</div>
                         </div>
 
+                        <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary w-100">Login</button>
                     </form>
 
@@ -44,8 +52,23 @@
     </div>
 </div>
 
-<!-- Bootstrap Form Validation -->
+<!-- JavaScript for Password Toggle -->
 <script>
+    document.getElementById("togglePassword").addEventListener("click", function () {
+        let passwordField = document.getElementById("password");
+        let icon = this.querySelector("i");
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    });
+
+    // Bootstrap Form Validation
     (function () {
         'use strict';
         var forms = document.querySelectorAll('.needs-validation');
@@ -59,5 +82,13 @@
             }, false);
         });
     })();
+
+    // Auto-hide alert messages after 3 seconds
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(alert => {
+            alert.classList.add('fade');
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 3000);
 </script>
 {% endblock user_login %}

@@ -1,61 +1,97 @@
 {% extends 'base.html' %}
+
 {% block user_profile %}
-<div class="container mt-5">
+<div class="container mt-5 pt-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg">
-                <div class="card-body">
-                    <h2 class="text-center mb-4">Your Profile</h2>
+        <div class="col-md-10">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-4">
+                    <!-- Profile Header -->
+                    <div class="text-center">
+                        <img src="{{ user.profile_pic.url }}" class="rounded-circle shadow" alt="Profile Picture"
+                             style="width: 120px; height: 120px; object-fit: cover;">
+                        <h3 class="mt-3">{{ user.full_name }}</h3>
+                        <p class="text-muted">{{ user.email }}</p>
+                    </div>
 
-                    <!-- Display Django messages -->
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-
-                    <div class="row">
-                        <div class="col-md-4 text-center">
-                            <!-- Profile Picture Section -->
-                            <img src="{{ user.profile_pic.url }}" class="img-fluid rounded-circle mb-3" alt="Profile Picture" style="width: 150px; height: 150px; object-fit: cover;">
-                            <h4>{{ user.username }}</h4>
-                        </div>
-
-                        <div class="col-md-8">
-                            <!-- User Info Section -->
-                            <div class="mb-3">
-                                <strong>Email:</strong> {{ user.email }}
-                            </div>
-
-                            <div class="mb-3">
-                                <strong>Instructor:</strong> {{ user.is_instructor|yesno:"Yes,No" }}
-                            </div>
-
-                            <div class="text-center">
-                                <!-- Edit Profile Button -->
-                                <a href="#" class="btn btn-warning btn-sm">Edit Profile</a>
+                    <!-- Learning Streak Section -->
+                    <div class="mt-4">
+                        <h4 class="text-center">🏆 Your Learning Streak</h4>
+                        <div class="card p-4 shadow-lg">
+                            <p><strong>🔥 Current Streak:</strong> {{ streak.current_streak }} days</p>
+                            <p><strong>🏅 Longest Streak:</strong> {{ streak.longest_streak }} days</p>
+                    
+                            <!-- Progress Bar -->
+                            <div class="progress mt-3">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                    id="streakProgressBar"
+                                    style="width: {{ streak.current_streak|floatformat:0 }}%;" 
+                                    aria-valuenow="{{ streak.current_streak }}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="30">
+                                    {{ streak.current_streak }} Days
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <hr>
+                    <!-- Active Goal Section -->
+                    <div class="mt-4">
+                        <h4 class="text-center">🎯 Active Learning Goal</h4>
+                        <div class="card p-4 shadow-lg">
+                            {% if active_goal %}
+                                <p><strong>📝 Goal Type:</strong> {{ active_goal.get_goal_type_display }}</p>
+                                <p><strong>🎯 Target:</strong> {{ active_goal.target_value }}</p>
+                                <p><strong>📅 End Date:</strong> {{ active_goal.end_date }}</p>
+                                <p><strong>📊 Progress:</strong> {{ active_goal.progress }} / {{ active_goal.target_value }}</p>
 
-                    <!--Change Profile Picture-->
-
-                    <h5 class="text-center">Change Profile Picture</h5>
-                    <form method="POST" enctype="multipart/form-data" class="needs-validation mt-4" novalidate>
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <input type="file" name="profile_pic" class="form-control" accept="image/*">
+                                <!-- Goal Progress Bar -->
+                                <div class="progress mt-2">
+                                    <div class="progress-bar bg-info" role="progressbar"
+                                        style="width: {{ active_goal.progress|floatformat:0 }}%;" 
+                                        aria-valuenow="{{ active_goal.progress }}" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="{{ active_goal.target_value }}">
+                                        {{ active_goal.progress }}%
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p class="text-muted text-center">No Active Goal Set</p>
+                                <a href="{% url 'set-goals' %}" class="btn btn-primary w-100 mt-2">Set a Goal</a>
+                            {% endif %}
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Update Profile Picture</button>
-                    </form>
+                    </div>
+
+                    <!-- Edit Profile & Change Picture -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">🖊 Edit Profile</h6>
+                            <a href="#" class="btn btn-warning btn-sm w-100">Edit Profile</a>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">📸 Update Profile Picture</h6>
+                            <form method="POST" enctype="multipart/form-data" class="mt-2">
+                                {% csrf_token %}
+                                <input type="file" name="profile_pic" class="form-control mb-2" accept="image/*" onchange="previewImage(event)">
+                                <button type="submit" class="btn btn-primary w-100">Update</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Achievements Section -->
+                    <div class="mt-4">
+                        <h4 class="fw-bold">🏆 Achievements</h4>
+                        <div class="d-flex flex-wrap">
+                            {% for badge in user.badges.all %}
+                                <span class="badge bg-success m-1 p-2">{{ badge.name }}</span>
+                            {% empty %}
+                                <p class="text-muted">No Badges Earned Yet</p>
+                            {% endfor %}
+                        </div>
+                    </div>
 
                     <p class="text-center mt-3">
-                        <a href="{% url 'home' %}" class="text-decoration-none">Go back to Home</a>
+                        <a href="{% url 'home' %}" class="text-decoration-none">🏠 Go back to Home</a>
                     </p>
                 </div>
             </div>
@@ -63,7 +99,7 @@
     </div>
 </div>
 
-<!-- JavaScript for Image Preview (optional) -->
+<!-- Image Preview Script -->
 <script>
     function previewImage(event) {
         let reader = new FileReader();

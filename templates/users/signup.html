@@ -3,53 +3,65 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow-lg">
-                <div class="card-body">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-body p-4">
                     <h2 class="text-center mb-4">Create an Account</h2>
 
-                    <!-- Display Django messages -->
+                    <!-- Display Django Messages -->
                     {% if messages %}
                         {% for message in messages %}
                             <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
                                 {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         {% endfor %}
                     {% endif %}
 
                     <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                         {% csrf_token %}
-                        
+
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" name="username" id="username" class="form-control" placeholder="Enter username" required>
-                            <div class="invalid-feedback">Please enter a valid username.</div>
+                            <label class="form-label">Full Name</label>
+                            <input type="text" name="full_name" class="form-control" placeholder="Enter full name" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" name="email" id="email" class="form-control" placeholder="Enter email" required>
-                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                            <label class="form-label">Username</label>
+                            <input type="text" name="username" class="form-control" placeholder="Enter username" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" placeholder="Enter email" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" name="phone_number" class="form-control" placeholder="Enter phone number" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" name="date_of_birth" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <textarea name="address" class="form-control" rows="2" placeholder="Enter address" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
                             <div class="input-group">
                                 <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required>
                                 <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">👁</button>
                             </div>
-                            <div class="invalid-feedback">Password cannot be empty.</div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="profile_pic" class="form-label">Profile Picture (Optional)</label>
-                            <input type="file" name="profile_pic" id="profile_pic" class="form-control" accept="image/*" onchange="previewImage(event)">
+                            <label class="form-label">Profile Picture (Optional)</label>
+                            <input type="file" name="profile_pic" class="form-control" accept="image/*" onchange="previewImage(event)">
                             <img id="profilePreview" class="img-thumbnail mt-2 d-none" style="max-width: 100px;">
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" name="is_instructor" id="is_instructor" class="form-check-input">
-                            <label for="is_instructor" class="form-check-label">Register as an Instructor</label>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">Sign Up</button>
@@ -64,7 +76,7 @@
     </div>
 </div>
 
-<!-- JavaScript for Show/Hide Password and Image Preview -->
+<!-- JavaScript for Password Toggle & Image Preview -->
 <script>
     function togglePassword() {
         let passwordField = document.getElementById("password");
@@ -80,20 +92,5 @@
         };
         reader.readAsDataURL(event.target.files[0]);
     }
-
-    // Bootstrap Form Validation
-    (function () {
-        'use strict';
-        var forms = document.querySelectorAll('.needs-validation');
-        Array.prototype.slice.call(forms).forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-        });
-    })();
 </script>
 {% endblock user_signup %}

@@ -2,7 +2,7 @@
 
 {% block course_detail %}
 
-<div class="container mt-5">
+<div class="container mt-5 pt-5">
     <div class="card shadow-lg p-4">
         <div class="row">
             <!-- Course Image -->
@@ -42,9 +42,9 @@
         <ul class="list-group">
             {% for lesson in course.lessons.all %}
                 <li class="list-group-item">
-                    <a href="{% url 'lesson_detail' lesson.id %}">
+                    {% comment %} <a href="{% url 'view_lesson' lesson.id %}"> {% endcomment %}
                         <i class="fas fa-video"></i> {{ lesson.title }}
-                    </a>
+                    {% comment %} </a> {% endcomment %}
                 </li>
             {% endfor %}
         </ul>

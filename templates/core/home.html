@@ -2,16 +2,27 @@
 {% block title %}Home | Online Academy{% endblock %}
 {% block home %}
 
-
 <!-- ===== Hero Section ===== -->
-<header class="bg-primary text-white text-center py-5">
+<header class="bg-primary text-white text-center py-5 mt-5">
     <div class="container">
         <h1 class="display-4">Learn From The Best</h1>
         <p class="lead">Join thousands of students learning new skills and boosting their careers.</p>
         <a href="#" class="btn btn-light btn-lg me-3">Explore Courses</a>
-        <a href="{% url "signup" %}" class="btn btn-outline-light btn-lg">Join Now</a>
+        <a href="{% url 'signup' %}" class="btn btn-outline-light btn-lg">Join Now</a>
     </div>
 </header>
+
+<!-- ===== Set Learning Goals Section ===== -->
+<section class="container my-5">
+    <h2 class="text-center fw-bold mb-4">🎯 Set Your Learning Goal</h2>
+    <div class="card shadow-lg p-4 text-center" style="border-radius: 12px; background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
+        <p class="text-light fs-5">Stay motivated and achieve your learning milestones with personal goals.</p>
+        <a href="{% url "set-goals" %}" class="btn btn-light btn-lg mt-3 fw-bold">
+            <i class="fas fa-bullseye"></i> Set Your Goal
+        </a>
+    </div>
+</section>
+
 
 <!-- ===== Featured Courses ===== -->
 <section class="container my-5">
@@ -23,7 +34,7 @@
                 <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}">
                 <div class="card-body">
                     <h5 class="card-title">{{ course.title }}</h5>
-                    <p class="card-text text-muted">Instructor: {{ course.instructor.username }}</p>
+                    <p class="card-text text-muted">Instructor: {{ course.instructor.full_name }}</p>
                     <p class="card-text">{{ course.short_description }}</p>
                     <a href="{% url 'course_detail' course.id %}" class="btn btn-primary w-100">View Course</a>
                 </div>
@@ -54,37 +65,6 @@
                 <i class="fas fa-certificate fa-3x text-primary"></i>
                 <h4 class="mt-3">Certified Courses</h4>
                 <p>Earn certificates to boost your career.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ===== Testimonials Section ===== -->
-<section class="container my-5">
-    <h2 class="text-center mb-4">What Our Students Say</h2>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card shadow">
-                <div class="card-body">
-                    <p class="card-text">"Online Academy changed my career! The courses are easy to follow and informative."</p>
-                    <h5 class="card-title">- Sarah Johnson</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card shadow">
-                <div class="card-body">
-                    <p class="card-text">"The best online learning platform with expert instructors and practical knowledge!"</p>
-                    <h5 class="card-title">- Mark Wilson</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card shadow">
-                <div class="card-body">
-                    <p class="card-text">"Loved the flexibility of learning at my own pace. Highly recommend!"</p>
-                    <h5 class="card-title">- Emily Davis</h5>
-                </div>
             </div>
         </div>
     </div>

@@ -1,0 +1,68 @@
+{% extends "superadmin/superbase.html" %}
+
+{% block superadmin_dashboard %}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h2 class="fw-bold">Super Admin Dashboard</h2>
+        <button class="btn btn-dark" id="sidebarToggle">Toggle Sidebar</button>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card shadow-lg border-0 p-4 rounded-lg text-black bg-gradient-primary">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4><i class="fas fa-users"></i> Total Users</h4>
+                    <span class="fs-3 fw-bold">{{total_user}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-lg border-0 p-4 rounded-lg text-black bg-gradient-success">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4><i class="fas fa-dollar-sign"></i> Total Revenue</h4>
+                    <span class="fs-3 fw-bold">$56,000</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-lg border-0 p-4 rounded-lg text-black bg-gradient-warning">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Pending Approvals</h4>
+                    <span class="fs-3 fw-bold">8 Instructors</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-lg-6">
+            <div class="card shadow p-4">
+                <h5 class="fw-bold">User Growth</h5>
+                <canvas id="userGrowthChart"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow p-4">
+                <h5 class="fw-bold">Revenue Trends</h5>
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx1 = document.getElementById('userGrowthChart').getContext('2d');
+    const ctx2 = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'line',
+        data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'], datasets: [{ label: 'Users', data: [100, 250, 400, 700, 1200], borderColor: '#007bff', fill: false }] }
+    });
+    new Chart(ctx2, {
+        type: 'bar',
+        data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'], datasets: [{ label: 'Revenue', data: [5000, 12000, 18000, 25000, 56000], backgroundColor: '#28a745' }] }
+    });
+</script>
+
+{% endblock superadmin_dashboard %}

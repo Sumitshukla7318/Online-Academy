@@ -2,12 +2,13 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Online Academy{% endblock %}</title>
-
+    <head>
+        {% load static %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Online Academy{% endblock %}</title>
+        
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Custom CSS -->
@@ -31,9 +32,45 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="{% url "home" %}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url "courses" %}">Courses</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'my_courses' %}">My Courses</a> </li>                    
+                    <li class="nav-item"><a class="nav-link" href="{% url 'my_courses' %}">My Courses</a> </li> 
+                    <li class="nav-item"><a class="nav-link" href="{% url 'leaderboard' course_id=1 %}">🏆 Leaderboard</a></li>    
+                    
+                    
                     <li class="nav-item"><a class="nav-link" href="{% url "about" %}">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url "contact" %}">Contact</a></li>
+                    {% if request.session.user_id|is_superadmin %}
+                    <li class="nav-item"><a class="nav-link" href="{% url "superadmin_dashboard" %}">SuperAdmin Panel</a></li>
+                    {% endif %}
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Notifications <span id="notificationCount" class="badge bg-danger">0</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                            <div id="notificationList"></div>
+                            <div class="dropdown-divider"></div>
+                            <button id="markAllRead" class="btn btn-success btn-sm btn-block">Mark All as Read</button>
+                        </div>
+                    </li>
+                    
+                    <!-- Modal -->
+                    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="notificationModalLabel">Notification Details</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body" id="notificationModalBody">
+                                    <!-- Notification details will be inserted here -->
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     
                     {% if request.session.user_id %}
                         <li class="nav-item dropdown">
@@ -43,10 +80,26 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
                                 
+                                {% if request.session.user_id|is_superadmin %}
+                                
+                                {% else %}
+                                
                                 {% if request.session.user_id|is_instructor %}
-                                    <li><a class="dropdown-item" href="{% url "Instructor_dashboard" %}">Instructor Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url "Instructor_dashboard" %}">Instructor Dashboard</a></li>
+                                {% else %}
+                                <li><a class="dropdown-item" href="{% url "request_instructorship" %}">Request Instructorship</a></li>
                                 {% endif %}
-                           
+                                
+                                {% if request.session.user_id|is_admin %}
+                                <li><a class="dropdown-item" href="{% url "admin_dashboard" %}">Admin Dashboard</a></li> 
+                                {% else %}
+                                <li><a class="dropdown-item" href="{% url "request_adminship" %}">Request Adminship</a></li> 
+                                {% endif %}
+                                
+                                <li class="nav-item"><a class="dropdown-item" href="{% url 'user_progress' %}">📊 My Progress</a></li>
+                                
+                                {% endif %}
+                                
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                             </ul>
                         </li>
@@ -69,7 +122,7 @@
     {% endif %}
 
     <!-- ====== Flash Messages ====== -->
-    <div class="container mt-3">
+    <div class="container pt-4 mt-5 ">
         {% if messages %}
             {% for message in messages %}
                 <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
@@ -102,6 +155,11 @@
         {% block edit_lesson %}{% endblock edit_lesson %}
         {% block start_quiz %}{% endblock start_quiz %}
         {% block quiz_result %}{% endblock quiz_result %}
+        {% block my_progress %}{% endblock my_progress %}
+        {% block Leaderboard %}{% endblock Leaderboard %}
+        {% block request_admin %}{% endblock request_admin %}
+        {% block request_instructorship %}{% endblock request_instructorship %}
+        {% block goal_setting %}{% endblock goal_setting %}
 
 
 
@@ -124,7 +182,146 @@
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS -->
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const notificationList = document.getElementById("notificationList");
+            const notificationCount = document.getElementById("notificationCount");
+            const markAllReadBtn = document.getElementById("markAllRead");
+            const notificationModalBody = document.getElementById("notificationModalBody");
+            const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+        
+            function fetchNotifications() {
+                fetch("/notifications/user/")
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        notificationList.innerHTML = "";
+                        let unreadCount = 0;
+            
+                        data.notifications.forEach(notification => {
+                            if (!notification.is_read) unreadCount++;
+            
+                            let notificationItem = document.createElement("div");
+                            notificationItem.classList.add("dropdown-item");
+            
+                            // Check if read
+                            let markReadBtnOrIcon = '';
+                            if (!notification.is_read) {
+                                markReadBtnOrIcon = `<button class="mark-read-btn btn btn-sm btn-outline-primary" data-id="${notification.id}">Mark as Read</button>`;
+                            } else {
+                                markReadBtnOrIcon = `<span class="text-success"><i class="fas fa-check-circle"></i> Read</span>`;
+                            }
+            
+                            notificationItem.innerHTML = `
+                                <div>
+                                    <strong>${notification.title}</strong>
+                                    <p>${notification.message}</p>
+                                    <small>${notification.timestamp}</small>
+                                    <div class="mt-2">
+                                        ${markReadBtnOrIcon}
+                                        <button class="hide-btn btn-sm btn-outline-danger" data-id="${notification.id}">
+                                             <i class="bi bi-eye-slash"></i> Hide
+                                        </button>
+                                        <button class="view-details-btn btn btn-sm btn-outline-info" data-id="${notification.id}">View Details</button>
+                                    </div>
+                                </div>
+                            `;
+                            notificationList.appendChild(notificationItem);
+                        });
+            
+                        notificationCount.textContent = unreadCount;
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+            }
+            
+            notificationList.addEventListener("click", function (event) {
+                if (event.target.classList.contains("mark-read-btn")) {
+                    let notificationId = event.target.getAttribute("data-id");
+                    let readUrl = "{% url 'mark_as_read' 0 %}".replace("0", notificationId);
+                    fetch(readUrl, {
+                    
+                      method: "POST",
+                      headers: {
+                        'X-CSRFToken': '{{ csrf_token }}', 
+                        {% comment %} 'Content-Type': 'application/json',  {% endcomment %}
+                      }
+                   })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(() => fetchNotifications())
+                        .catch(error => {
+                            console.error('There was a problem with the fetch operation:', error);
+                        });
+                }
+            
+
+                
+
+                if (event.target.classList.contains("hide-btn")) {
+                    let notificationId = event.target.getAttribute("data-id");
+                    let hideUrl = "{% url 'hide_notification' 0 %}".replace("0", notificationId);
+
+                    fetch(hideUrl, 
+                    { 
+                        method: "POST" ,
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}', 
+                            {% comment %} 'Content-Type': 'application/json',  {% endcomment %}
+                          }
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(() => fetchNotifications())
+                        .catch(error => {
+                            alert('There was a problem with the fetch operation:', error);
+                        });
+                }
+            });
+
+
+            markAllReadBtn.addEventListener("click", function () {
+                fetch("/notifications/mark-all-read/", { 
+                    method: "POST",
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}', 
+                        'Content-Type': 'application/json', 
+                      }
+                   })
+
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(() => fetchNotifications())
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+            });
+        
+            setInterval(fetchNotifications, 5000); // Auto-refresh every 5 seconds
+            fetchNotifications();
+        });
+    </script>
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

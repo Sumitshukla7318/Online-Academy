@@ -1,0 +1,223 @@
+{% extends "admin/admin_base.html" %}
+
+{% block manage_notifications %}
+<div class="content ms-autu ml-4">
+    <h2 class="mb-4 text-center">Manage Notifications</h2>
+
+    <!-- Tabs for User, Instructor & All -->
+    <ul class="nav nav-tabs ml-5" id="notificationTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="user-tab" data-toggle="tab" href="#user" role="tab">Send to User</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="instructor-tab" data-toggle="tab" href="#instructor" role="tab">Send to Instructor</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="all-tab" data-toggle="tab" href="#all" role="tab">Send to All</a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3 ml-5" id="notificationTabsContent">
+        <!-- Send to User -->
+        <div class="tab-pane fade show active" id="user" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Send Notification to Specific User</h5>
+                    <form id="sendUserNotificationForm" method="post">
+                        <div class="form-group">
+                            <label>User ID</label>
+                            <input type="number" name="user_id" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" name="title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea name="message" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Notification Type</label>
+                            <select name="notification_type" class="form-control">
+                                <option value="info">Info</option>
+                                <option value="warning">Warning</option>
+                                <option value="success">Success</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Notification</button>
+                    </form>
+                    <button id="sendAllUsers" class="btn btn-secondary mt-3">Send to All Users</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Send to Instructor -->
+        <div class="tab-pane fade" id="instructor" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Send Notification to Instructor</h5>
+                    <form id="sendInstructorNotificationForm" method="post">
+                        <div class="form-group">
+                            <label>Instructor ID</label>
+                            <input type="number" name="instructor_id" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" name="title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea name="message" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Notification Type</label>
+                            <select name="notification_type" class="form-control">
+                                <option value="info">Info</option>
+                                <option value="warning">Warning</option>
+                                <option value="success">Success</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Notification</button>
+                    </form>
+                    <button id="sendAllInstructors" class="btn btn-secondary mt-3">Send to All Instructors</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Send to All -->
+        <div class="tab-pane fade" id="all" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Send Notification to All (Users & Instructors)</h5>
+                    <form id="sendAllNotificationForm" method="post">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" name="title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea name="message" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Notification Type</label>
+                            <select name="notification_type" class="form-control">
+                                <option value="info">Info</option>
+                                <option value="warning">Warning</option>
+                                <option value="success">Success</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Send to All</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Recent Notifications Table -->
+    <div class="card mt-5 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">Recent Notifications</h5>
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notification in notifications %}
+                    <tr>
+                        <td>{{ notification.id }}</td>
+                        <td>{{ notification.user.username }}</td>
+                        <td>{{ notification.title }}</td>
+                        <td><span class="badge badge-info">{{ notification.notification_type }}</span></td>
+                        <td>{{ notification.created_at }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5">No notifications found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Send to specific user
+    document.getElementById('sendUserNotificationForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        let formData = new FormData(this);
+        fetch('{% url "send_notification_user" %}', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        }).then(res => res.json()).then(data => {
+            alert(data.message);
+            location.reload();
+        });
+    });
+
+    // Send to all users
+    document.getElementById('sendAllUsers').addEventListener('click', function(){
+        fetch('{% url "send_notification_all" %}', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        }).then(res => res.json()).then(data => {
+            alert(data.message);
+            location.reload();
+        });
+    });
+
+    // Send to specific instructor
+    document.getElementById('sendInstructorNotificationForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        let formData = new FormData(this);
+        fetch('{% url "send_notification_instructor" %}', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        }).then(res => res.json()).then(data => {
+            alert(data.message);
+            location.reload();
+        });
+    });
+
+    // Send to all instructors
+    document.getElementById('sendAllInstructors').addEventListener('click', function(){
+        fetch('{% url "send_notifications_all_instructors" %}', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        }).then(res => res.json()).then(data => {
+            alert(data.message);
+            location.reload();
+        });
+    });
+
+    // Send to all (users + instructors)
+    document.getElementById('sendAllNotificationForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        let formData = new FormData(this);
+        fetch('{% url "send_notification_all" %}', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        }).then(res => res.json()).then(data => {
+            alert(data.message);
+            location.reload();
+        });
+    });
+</script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock manage_notifications %}

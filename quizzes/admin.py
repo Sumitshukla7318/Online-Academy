@@ -8,7 +8,10 @@ admin.site.register(Question,QuestionAdmin)
 class QuizAdmin(admin.ModelAdmin):
     list_display=('id','course','title','description','time_limit')
 
-admin.site.register(Quiz,QuizAdmin)
+class QuizAttemptAdmin(admin.ModelAdmin):
+    list_display=('user','quiz','score','correct_answers')
 
+admin.site.register(Quiz,QuizAdmin)
+admin.site.register(QuizAttempt,QuizAttemptAdmin)
 
 # Register your models here.

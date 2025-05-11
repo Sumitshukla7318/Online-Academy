@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block my_progress %}
+<div class="container mt-4 mt-5 pt-5">
+    <h2 class="text-center">📊 Your Learning Progress</h2>
+
+    <div class="card p-3 mb-3">
+        <h4>📚 Lesson Completion</h4>
+        <p>Completed: {{ completed_lessons }} / {{ total_lessons }} ({{ lesson_completion_percentage }}%)</p>
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: {{ lesson_completion_percentage }}%;" aria-valuenow="{{ lesson_completion_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                {{ lesson_completion_percentage }}%
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-3 mb-3">
+        <h4>🎯 Quiz Performance</h4>
+        <p>Average Score: {{ avg_score }}</p>
+        <p>Accuracy: {{ avg_accuracy }}%</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Quiz Title</th>
+                    <th>Score</th>
+                    <th>Accuracy (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz in quiz_data %}
+                <tr>
+                    <td>{{ quiz.quiz__title }}</td>
+                    <td>{{ quiz.score }}</td>
+                    <td>{{ quiz.accuracy }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card p-3 mb-3">
+        <h4>🏆 Leaderboard Rank</h4>
+        <p>Your Rank: <strong>{{ user_rank }}</strong></p>
+    </div>
+</div>
+
+{% endblock my_progress %}

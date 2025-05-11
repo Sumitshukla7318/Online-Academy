@@ -7,5 +7,8 @@ urlpatterns = [
     path('logout/',views.LogoutView.as_view(),name="logout"),
     path('profile/',views.ProfileView.as_view(),name="profile"),
     path('Instructor_dashboard/',views.InstructorDashboard.as_view(),name="Instructor_dashboard"),
+    path('student_detail/<int:id>/',views.StudentDetail.as_view(),name='student_detail'),
+    path('request_instructorship/',views.RequestInstructorship.as_view(),name='request_instructorship'),
+    path('request_adminship/',views.RequestAdminship.as_view(),name='request_adminship'),
     
 ]

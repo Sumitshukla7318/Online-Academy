@@ -1,0 +1,93 @@
+{% extends "admin/admin_base.html" %}
+
+
+{% block manage_instructors %}
+
+<div class="content ml-4 pt-5">
+    <h2 class="mb-4 text-center">Manage Instructors</h2>
+
+    <!-- Tabs for Approved & Rejected Instructors -->
+    <ul class="nav nav-tabs ml-5" id="instructorTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="approved-tab" data-toggle="tab" href="#approved" role="tab">Approved Instructors</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="rejected-tab" data-toggle="tab" href="#rejected" role="tab">Rejected Instructors</a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3 ml-5" id="instructorTabsContent">
+        <!-- Approved Instructors -->
+        <div class="tab-pane fade show active" id="approved" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Approved Instructors</h5>
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Joined At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for instructor in active_instructors %}
+                            <tr>
+                                <td>{{ instructor.instructor.id }}</td>
+                                <td>{{ instructor.instructor.name }}</td>
+                                <td>{{ instructor.instructor.email }}</td>
+                                <td>{{ instructor.instructor.created_at }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4">No approved instructors found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rejected Instructors -->
+        <div class="tab-pane fade" id="rejected" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Rejected Instructors</h5>
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Rejected At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for instructor in rejected_instructors %}
+                            <tr>
+                                <td>{{ instructor.instructor.id }}</td>
+                                <td>{{ instructor.instructor.full_name }}</td>
+                                <td>{{ instructor.instructor.email }}</td>
+                                <td>{{ instructor.reviewed_at }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4">No rejected instructors found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+{% endblock manage_instructors %}

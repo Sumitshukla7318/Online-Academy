@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'core',
     'Payment',
     'recommendations',
+    'SuperAdmin',
+    'Notifications',
 ]
 
 MIDDLEWARE = [
