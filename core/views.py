@@ -25,4 +25,4 @@ class About(View):
 
 class Contact(View):
     def get(self,request):
-        return render(request,"contact/contact_us.html")
+        return render(request,"Contact/contact_us.html")
