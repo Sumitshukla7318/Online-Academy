@@ -1,2 +1,42 @@
-"staticfiles/" 
-"staticfiles/" 
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django migrations
+*/migrations/*.py
+*/migrations/*.pyc
+
+# Environment files
+.env
+venv/
+env/
+ENV/
+
+# Static files (collected)
+staticfiles/
+
+# Media files (optional, if you don't want to track uploads)
+media/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+
+# Byte-compiled / optimized / DLL files
+*.pyc
+*.pyo
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# macOS system files
+.DS_Store
