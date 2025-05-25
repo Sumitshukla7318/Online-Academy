@@ -14,9 +14,10 @@ class ManageNotifications(View):
     
 class GetUserNotifications(View):
     def get(self, request):
-        print("ohk dome ")
-        notifications = Notification.objects.filter(user=User.objects.get(id=request.session['user_id'])).order_by("created_at")
-        data = [
+        if 'user_id':
+        
+            notifications = Notification.objects.filter(user=User.objects.get(id=request.session['user_id'])).order_by("created_at")
+            data = [
         
             {
                 "id": n.id,
@@ -26,8 +27,8 @@ class GetUserNotifications(View):
                 "timestamp": n.created_at.strftime("%Y-%m-%d %H:%M:%S")
             }
             for n in notifications if not n.is_deleted
-        ]
-        return JsonResponse({"notifications": data})
+            ]
+            return JsonResponse({"notifications": data})
 
 
 class MakeNotificationsAsRead(View):
