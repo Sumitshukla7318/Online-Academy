@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'recommendations',
     'SuperAdmin',
     'Notifications',
+    'cloudinary_storage',
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -148,6 +150,13 @@ LOGGING = {
 
 
 
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dmqsvbyfz',
+    'API_KEY': '516322764339631',
+    'API_SECRET': 'u53P24XJ63Tu9wtwNa14-y9zem0',
+}
 
 
 STATIC_URL = '/static/'
