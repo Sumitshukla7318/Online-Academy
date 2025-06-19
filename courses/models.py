@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+# from cloudinary.models import CloudinaryField
 
 # Create your models here.
 class Course(models.Model):
@@ -11,6 +12,7 @@ class Course(models.Model):
     price=models.DecimalField(max_digits=10,decimal_places=2,default=0.00)
     level=models.CharField(max_length=50,choices=[("Beginner", "Beginner"), ("Intermediate", "Intermediate"), ("Advanced", "Advanced")])
     thumbnail=models.ImageField(upload_to="course_thumbnails/")
+    # thumbnail=CloudinaryField('thumbnail')
     created_at=models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
